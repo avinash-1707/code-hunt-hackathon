@@ -1,11 +1,17 @@
 import { OAuth2Client } from "google-auth-library";
-import { AuthProvider, type User } from "@prisma/client";
+
 import { prisma } from "../../prisma/client.js";
 import { env } from "../../config/env.js";
 import { AppError } from "../../core/errors.js";
 import { newId, sha256 } from "../../utils/crypto.js";
 import { hashPassword, verifyPassword } from "../../utils/password.js";
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../../utils/jwt.js";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} from "../../utils/jwt.js";
+import { AuthProvider } from "../../generated/prisma/enums.js";
+import type { User } from "../../generated/prisma/client.js";
 
 type SessionMeta = {
   ipAddress: string | null;
@@ -21,7 +27,11 @@ type TokenPair = {
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 export class AuthService {
-  async register(email: string, password: string, meta: SessionMeta): Promise<TokenPair> {
+  async register(
+    email: string,
+    password: string,
+    meta: SessionMeta,
+  ): Promise<TokenPair> {
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       throw new AppError(409, "Email already in use");
@@ -40,7 +50,11 @@ export class AuthService {
     return this.issueTokens(user, meta);
   }
 
-  async login(email: string, password: string, meta: SessionMeta): Promise<TokenPair> {
+  async login(
+    email: string,
+    password: string,
+    meta: SessionMeta,
+  ): Promise<TokenPair> {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user?.passwordHash) {
       throw new AppError(401, "Invalid credentials");
@@ -54,7 +68,10 @@ export class AuthService {
     return this.issueTokens(user, meta);
   }
 
-  async loginWithGoogle(idToken: string, meta: SessionMeta): Promise<TokenPair> {
+  async loginWithGoogle(
+    idToken: string,
+    meta: SessionMeta,
+  ): Promise<TokenPair> {
     const ticket = await googleClient.verifyIdToken({
       idToken,
       audience: env.GOOGLE_CLIENT_ID,
@@ -118,7 +135,9 @@ export class AuthService {
     const newJti = newId();
     const newJtiHash = sha256(newJti);
     const csrfToken = newId();
-    const expiresAt = new Date(Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(
+      Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
+    );
 
     const nextRefreshToken = signRefreshToken({
       sub: existing.userId,
@@ -126,7 +145,7 @@ export class AuthService {
       familyId: existing.familyId,
     });
 
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: any) => {
       const updated = await tx.refreshToken.updateMany({
         where: { id: existing.id, revokedAt: null },
         data: {
@@ -152,7 +171,10 @@ export class AuthService {
     });
 
     return {
-      accessToken: signAccessToken({ sub: existing.user.id, email: existing.user.email }),
+      accessToken: signAccessToken({
+        sub: existing.user.id,
+        email: existing.user.email,
+      }),
       refreshToken: nextRefreshToken,
       csrfToken,
     };
@@ -172,7 +194,9 @@ export class AuthService {
     const jti = newId();
     const familyId = newId();
     const csrfToken = newId();
-    const expiresAt = new Date(Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(
+      Date.now() + env.REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
+    );
 
     const accessToken = signAccessToken({ sub: user.id, email: user.email });
     const refreshToken = signRefreshToken({ sub: user.id, jti, familyId });

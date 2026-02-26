@@ -12,6 +12,12 @@ enum AuthProvider {
   GOOGLE
 }
 
+enum UserRole {
+  SUPER_ADMIN
+  HR_ADMIN
+  HR_MANAGER
+}
+
 model User {
   id            String       @id @default(cuid())
   email         String       @unique
@@ -21,6 +27,8 @@ model User {
   emailVerified Boolean      @default(false)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+
+  role UserRole @default(HR_MANAGER)
 
   refreshTokens RefreshToken[]
 
@@ -45,4 +53,117 @@ model RefreshToken {
   @@index([userId, revokedAt])
   @@index([familyId])
   @@index([expiresAt])
+}
+
+model Organization {
+  id            String    @id
+  name          String
+  domain        String?
+  orgLogo       String?
+  description   String?
+  establishedAt DateTime?
+  createdAt     DateTime
+}
+
+model Department {
+  id              String @id
+  name            String
+  organizationId  String
+}
+
+model JobPosition {
+  id           String  @id
+  title        String
+  departmentId String
+  level        String? // L1, L2, Senior, etc.
+}
+
+model JobOpening {
+  id              String   @id
+  title           String
+  description     String
+  departmentId    String
+  hiringManagerId String
+  status          String // OPEN, CLOSED, ON_HOLD
+  createdAt       DateTime
+  vacancies       Int
+  compensation     String? // Salary range or details
+  duration         String? // Full-time, Part-time, Contract
+  jobType          String? // Remote, On-site, Hybrid
+}
+
+model Candidate {
+  id        String   @id
+  name      String
+  email     String
+  phone     String?
+  resumeUrl String?
+  source    String? // LinkedIn, Referral, etc.
+  createdAt DateTime
+}
+
+model Application {
+  id          String   @id
+  candidateId String
+  jobId       String
+  status      String // APPLIED, SHORTLISTED, INTERVIEW, OFFERED, REJECTED
+  appliedAt   DateTime
+}
+
+model Interview {
+  id            String   @id
+  applicationId String
+  interviewer String
+  scheduledAt   DateTime
+  feedback      String?
+  rating        Int?
+  status        String // SCHEDULED, COMPLETED
+}
+
+model Employee {
+  id             String   @id
+  userId         String
+  organizationId String
+  departmentId   String
+  positionId     String
+  joiningDate    DateTime
+  employmentType String // FULL_TIME, INTERN, CONTRACT
+  status         String // ACTIVE, RESIGNED, TERMINATED
+}
+
+model LeaveRequest {
+  id         String   @id
+  employeeId String
+  startDate  DateTime
+  endDate    DateTime
+  reason     String?
+  status     String // PENDING, APPROVED, REJECTED
+}
+
+model Compensation {
+  id            String   @id
+  employeeId    String
+  baseSalary    Float
+  bonus         Float?
+  currency      String
+  effectiveFrom DateTime
+}
+
+model Goal {
+  id          String   @id
+  employeeId  String
+  title       String
+  description String?
+  dueDate     DateTime
+  status      String // ON_TRACK, DELAYED, COMPLETED
+}
+
+model PerformanceReview {
+  id           String   @id
+  employeeId   String
+  reviewerId   String
+  reviewPeriod String
+  rating       Int
+  comments     String?
+  createdAt    DateTime
 }
