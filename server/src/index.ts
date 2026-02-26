@@ -1,12 +1,18 @@
-import express from "express";
+import "dotenv/config";
+import { app } from "./app.js";
+import { env } from "./config/env.js";
+import { prisma } from "./prisma/client.js";
 
-const app = express();
-const PORT = 5000;
-
-app.get("/", (req, res) => {
-  res.send("Running with TSX 🚀");
+const server = app.listen(env.PORT, () => {
+  console.log(`API listening on ${env.PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+const shutdown = async (): Promise<void> => {
+  server.close(async () => {
+    await prisma.$disconnect();
+    process.exit(0);
+  });
+};
+
+process.on("SIGINT", shutdown);
+process.on("SIGTERM", shutdown);
