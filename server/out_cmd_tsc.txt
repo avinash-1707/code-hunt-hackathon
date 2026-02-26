@@ -1,0 +1,40 @@
+src/modules/auth/auth.service.ts(13,30): error TS2307: Cannot find module '../../generated/prisma/enums.js' or its corresponding type declarations.
+src/modules/auth/auth.service.ts(14,27): error TS2307: Cannot find module '../../generated/prisma/client.js' or its corresponding type declarations.
+src/modules/hr-admin/attendance/attendance.service.ts(1,48): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/attendance/attendance.service.ts(31,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(89,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(90,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(91,38): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(92,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/audit/audit.service.ts(1,30): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/compensation/compensation.service.ts(1,30): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/compensation/compensation.service.ts(25,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/dashboard/dashboard.service.ts(1,30): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/employee/employee.service.ts(1,54): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/employee/employee.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/employee/employee.service.ts(53,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/employee/employee.service.ts(83,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(1,52): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/goals/goals.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/goals/goals.service.ts(33,44): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(34,48): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(40,37): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(47,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(72,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/hr-admin.middleware.ts(2,30): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/leaves/leaves.service.ts(1,43): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/leaves/leaves.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/leaves/leaves.service.ts(30,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/payroll/payroll.service.ts(1,30): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/payroll/payroll.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/payroll/payroll.service.ts(37,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/performance/performance.service.ts(1,30): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/modules/hr-admin/performance/performance.service.ts(30,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/prisma/client.ts(1,30): error TS2307: Cannot find module '@prisma/client' or its corresponding type declarations.
+src/utils/jwt.ts(21,7): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.

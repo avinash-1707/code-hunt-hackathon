@@ -1,0 +1,7 @@
+[2mLoaded Prisma config from prisma.config.ts.
+[22m
+[2mPrisma schema loaded from prisma\schema.prisma.[22m
+[1m[31mError: [39m[22m
+D:\GitRepos\code-hunt-hackathon\server\node_modules\@prisma\client exists and is not empty but doesn't look like a generated Prisma Client. Please check your output path and remove the existing directory if you indeed want to generate the Prisma Client in that location.
+
+
