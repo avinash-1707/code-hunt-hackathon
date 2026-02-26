@@ -13,6 +13,9 @@ const envSchema = z.object({
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
 
   GOOGLE_CLIENT_ID: z.string().min(10),
+  GOOGLE_CLIENT_SECRET: z.string().min(10),
+  GOOGLE_CALLBACK_URL: z.string().url(),
+  FRONTEND_URL: z.string().url(),
 
   CORS_ORIGINS: z.string().min(1),
   COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("lax"),

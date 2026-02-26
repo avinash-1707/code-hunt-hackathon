@@ -18,7 +18,3 @@ export const loginSchema = z.object({
   email: z.string().email().transform((value) => value.toLowerCase().trim()),
   password: z.string().min(1),
 });
-
-export const googleSchema = z.object({
-  idToken: z.string().min(20),
-});

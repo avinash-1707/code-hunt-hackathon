@@ -7,6 +7,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
 enum AuthProvider {
   LOCAL
   GOOGLE
@@ -18,6 +20,75 @@ enum UserRole {
   HR_MANAGER
 }
 
+enum JobOpeningStatus {
+  OPEN
+  CLOSED
+  ON_HOLD
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  INTERN
+  CONTRACT
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  RESIGNED
+  TERMINATED
+  ON_LEAVE
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  INTERVIEWING
+  OFFERED
+  HIRED
+  REJECTED
+  WITHDRAWN
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum GoalStatus {
+  ON_TRACK
+  AT_RISK
+  DELAYED
+  COMPLETED
+  CANCELLED
+}
+
+enum WorkArrangement {
+  REMOTE
+  ON_SITE
+  HYBRID
+}
+
+enum CandidateSource {
+  LINKEDIN
+  REFERRAL
+  JOB_BOARD
+  COMPANY_WEBSITE
+  AGENCY
+  OTHER
+}
+
+// ─── Auth ─────────────────────────────────────────────────────────────────────
+
 model User {
   id            String       @id @default(cuid())
   email         String       @unique
@@ -25,12 +96,14 @@ model User {
   provider      AuthProvider @default(LOCAL)
   googleId      String?      @unique
   emailVerified Boolean      @default(false)
+  role          UserRole     @default(HR_MANAGER)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  role UserRole @default(HR_MANAGER)
-
-  refreshTokens RefreshToken[]
+  refreshTokens     RefreshToken[]
+  employee          Employee?
+  conductedInterviews Interview[]   @relation("Interviewer")
+  managedOpenings   JobOpening[]   @relation("HiringManager")
 
   @@index([provider])
   @@index([createdAt])
@@ -55,115 +128,241 @@ model RefreshToken {
   @@index([expiresAt])
 }
 
+// ─── Organization ─────────────────────────────────────────────────────────────
+
 model Organization {
-  id            String    @id
+  id            String    @id @default(cuid())
   name          String
-  domain        String?
-  orgLogo       String?
+  domain        String?   @unique
+  logoUrl       String?
   description   String?
   establishedAt DateTime?
-  createdAt     DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  departments  Department[]
+  employees    Employee[]
+  jobOpenings  JobOpening[]
+
+  @@index([domain])
 }
 
 model Department {
-  id              String @id
-  name            String
-  organizationId  String
+  id             String   @id @default(cuid())
+  name           String
+  organizationId String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  positions    JobPosition[]
+  employees    Employee[]
+  jobOpenings  JobOpening[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
 }
 
 model JobPosition {
-  id           String  @id
+  id           String  @id @default(cuid())
   title        String
   departmentId String
-  level        String? // L1, L2, Senior, etc.
+  level        String? // e.g. L1, L2, Senior, Staff
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  department Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  employees  Employee[]
+
+  @@index([departmentId])
 }
 
+// ─── Recruiting ───────────────────────────────────────────────────────────────
+
 model JobOpening {
-  id              String   @id
+  id              String           @id @default(cuid())
   title           String
   description     String
+  organizationId  String
   departmentId    String
   hiringManagerId String
-  status          String // OPEN, CLOSED, ON_HOLD
-  createdAt       DateTime
-  vacancies       Int
-  compensation     String? // Salary range or details
-  duration         String? // Full-time, Part-time, Contract
-  jobType          String? // Remote, On-site, Hybrid
+  status          JobOpeningStatus @default(OPEN)
+  vacancies       Int              @default(1)
+  salaryMin       Float?
+  salaryMax       Float?
+  currency        String?          @default("USD")
+  employmentType  EmploymentType   @default(FULL_TIME)
+  workArrangement WorkArrangement  @default(ON_SITE)
+  closedAt        DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  department     Department    @relation(fields: [departmentId], references: [id])
+  hiringManager  User          @relation("HiringManager", fields: [hiringManagerId], references: [id])
+  applications   Application[]
+
+  @@index([organizationId, status])
+  @@index([departmentId])
+  @@index([hiringManagerId])
+  @@index([status, createdAt])
 }
 
 model Candidate {
-  id        String   @id
+  id        String          @id @default(cuid())
   name      String
-  email     String
+  email     String          @unique
   phone     String?
   resumeUrl String?
-  source    String? // LinkedIn, Referral, etc.
-  createdAt DateTime
+  source    CandidateSource @default(OTHER)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  applications Application[]
+
+  @@index([email])
+  @@index([createdAt])
 }
 
 model Application {
-  id          String   @id
+  id          String            @id @default(cuid())
   candidateId String
-  jobId       String
-  status      String // APPLIED, SHORTLISTED, INTERVIEW, OFFERED, REJECTED
-  appliedAt   DateTime
+  jobOpeningId String
+  status      ApplicationStatus @default(APPLIED)
+  coverLetter String?
+  appliedAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  candidate  Candidate   @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  jobOpening JobOpening  @relation(fields: [jobOpeningId], references: [id], onDelete: Cascade)
+  interviews Interview[]
+
+  @@unique([candidateId, jobOpeningId])
+  @@index([candidateId])
+  @@index([jobOpeningId])
+  @@index([status])
 }
 
 model Interview {
-  id            String   @id
+  id            String          @id @default(cuid())
   applicationId String
-  interviewer String
+  interviewerId String
   scheduledAt   DateTime
+  durationMins  Int             @default(60)
+  location      String?         // URL for virtual, room for on-site
   feedback      String?
-  rating        Int?
-  status        String // SCHEDULED, COMPLETED
+  rating        Int?            // 1–5
+  status        InterviewStatus @default(SCHEDULED)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  interviewer User        @relation("Interviewer", fields: [interviewerId], references: [id])
+
+  @@index([applicationId])
+  @@index([interviewerId])
+  @@index([scheduledAt])
 }
 
+// ─── HR / Employee ────────────────────────────────────────────────────────────
+
 model Employee {
-  id             String   @id
-  userId         String
+  id             String         @id @default(cuid())
+  userId         String         @unique
   organizationId String
   departmentId   String
   positionId     String
+  employeeCode   String?        @unique // e.g. EMP-0042
   joiningDate    DateTime
-  employmentType String // FULL_TIME, INTERN, CONTRACT
-  status         String // ACTIVE, RESIGNED, TERMINATED
+  exitDate       DateTime?
+  employmentType EmploymentType @default(FULL_TIME)
+  status         EmployeeStatus @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  user          User               @relation(fields: [userId], references: [id], onDelete: Restrict)
+  organization  Organization       @relation(fields: [organizationId], references: [id])
+  department    Department         @relation(fields: [departmentId], references: [id])
+  position      JobPosition        @relation(fields: [positionId], references: [id])
+  leaveRequests LeaveRequest[]
+  compensations Compensation[]
+  goals         Goal[]
+  reviews       PerformanceReview[] @relation("ReviewSubject")
+  conductedReviews PerformanceReview[] @relation("Reviewer")
+
+  @@index([organizationId, status])
+  @@index([departmentId])
+  @@index([userId])
 }
 
 model LeaveRequest {
-  id         String   @id
+  id         String      @id @default(cuid())
   employeeId String
   startDate  DateTime
   endDate    DateTime
+  leaveType  String      // ANNUAL, SICK, MATERNITY, PATERNITY, UNPAID
   reason     String?
-  status     String // PENDING, APPROVED, REJECTED
+  status     LeaveStatus @default(PENDING)
+  reviewedBy String?
+  reviewedAt DateTime?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, status])
+  @@index([startDate, endDate])
 }
 
 model Compensation {
-  id            String   @id
+  id            String   @id @default(cuid())
   employeeId    String
   baseSalary    Float
-  bonus         Float?
-  currency      String
+  bonus         Float?   @default(0)
+  currency      String   @default("USD")
   effectiveFrom DateTime
+  effectiveTo   DateTime?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, effectiveFrom])
 }
 
 model Goal {
-  id          String   @id
+  id          String     @id @default(cuid())
   employeeId  String
   title       String
   description String?
   dueDate     DateTime
-  status      String // ON_TRACK, DELAYED, COMPLETED
+  status      GoalStatus @default(ON_TRACK)
+  progress    Int        @default(0) // 0–100 percent
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([employeeId, status])
+  @@index([dueDate])
 }
 
 model PerformanceReview {
-  id           String   @id
-  employeeId   String
-  reviewerId   String
-  reviewPeriod String
-  rating       Int
-  comments     String?
-  createdAt    DateTime
+  id             String   @id @default(cuid())
+  employeeId     String
+  reviewerId     String
+  reviewPeriod   String   // e.g. "2024-Q4" or "2024-H1"
+  rating         Int      // 1–5
+  comments       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  employee Employee @relation("ReviewSubject", fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewer Employee @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@unique([employeeId, reviewerId, reviewPeriod])
+  @@index([employeeId])
+  @@index([reviewerId])
+  @@index([reviewPeriod])
 }
