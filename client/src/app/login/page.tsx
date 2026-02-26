@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,6 +21,7 @@ const errorClassName = "text-xs text-red-600";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, isInitializing, signIn, signUp } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("login");
@@ -47,6 +48,23 @@ export default function LoginPage() {
       router.replace("/dashboard");
     }
   }, [isAuthenticated, isInitializing, router]);
+
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+    if (!oauthError) return;
+
+    if (oauthError === "google_auth_failed") {
+      setError("Google authentication failed.");
+      return;
+    }
+
+    if (oauthError === "invalid_oauth_state") {
+      setError("Invalid OAuth state. Please try Google login again.");
+      return;
+    }
+
+    setError("Authentication failed.");
+  }, [searchParams]);
 
   const handleLogin = loginForm.handleSubmit(async (values) => {
     setBusy(true);

@@ -17,10 +17,6 @@ export type LoginInput = {
   password: string;
 };
 
-export type GoogleAuthInput = {
-  idToken: string;
-};
-
 type RetriableConfig = InternalAxiosRequestConfig & {
   _retry?: boolean;
 };
@@ -129,11 +125,6 @@ export const register = async (payload: RegisterInput): Promise<AuthResponse> =>
 
 export const login = async (payload: LoginInput): Promise<AuthResponse> => {
   const response = await api.post<AuthResponse>(`${API_PREFIX}/auth/login`, payload);
-  return response.data;
-};
-
-export const googleAuth = async (payload: GoogleAuthInput): Promise<AuthResponse> => {
-  const response = await api.post<AuthResponse>(`${API_PREFIX}/auth/google`, payload);
   return response.data;
 };
 

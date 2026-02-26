@@ -1,8 +1,12 @@
 import type { Request, Response } from "express";
 import { env } from "../../config/env.js";
 
-import { REFRESH_COOKIE_NAME } from "../../config/constants.js";
 import {
+  GOOGLE_OAUTH_STATE_COOKIE_NAME,
+  REFRESH_COOKIE_NAME,
+} from "../../config/constants.js";
+import {
+  clearGoogleOAuthStateCookie,
   clearCsrfCookie,
   clearRefreshCookie,
   setCsrfCookie,
@@ -49,6 +53,19 @@ export const googleOAuthCallbackHandler = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const cookieState = req.cookies?.[GOOGLE_OAUTH_STATE_COOKIE_NAME] as
+    | string
+    | undefined;
+  const queryState = typeof req.query.state === "string" ? req.query.state : undefined;
+
+  if (!cookieState || !queryState || cookieState !== queryState) {
+    clearGoogleOAuthStateCookie(res);
+    res.redirect(`${env.FRONTEND_URL}/login?error=invalid_oauth_state`);
+    return;
+  }
+
+  clearGoogleOAuthStateCookie(res);
+
   const user = req.user as { id: string; email: string } | undefined;
 
   if (!user) {

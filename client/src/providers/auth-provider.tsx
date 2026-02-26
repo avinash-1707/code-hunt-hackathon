@@ -10,14 +10,12 @@ import {
 } from "react";
 import {
   getMe,
-  googleAuth,
   hydrateAccessToken,
   login,
   logout,
   refreshSession,
   register,
   setAccessToken,
-  type GoogleAuthInput,
   type LoginInput,
   type RegisterInput,
 } from "@/lib/api";
@@ -40,7 +38,6 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   signIn: (payload: LoginInput) => Promise<void>;
   signUp: (payload: RegisterInput) => Promise<void>;
-  signInWithGoogleToken: (payload: GoogleAuthInput) => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 };
@@ -73,15 +70,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = useCallback(
     async (payload: RegisterInput): Promise<void> => {
       const response = await register(payload);
-      setAccessToken(response.accessToken);
-      await refreshProfile();
-    },
-    [refreshProfile],
-  );
-
-  const signInWithGoogleToken = useCallback(
-    async (payload: GoogleAuthInput): Promise<void> => {
-      const response = await googleAuth(payload);
       setAccessToken(response.accessToken);
       await refreshProfile();
     },
@@ -124,7 +112,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: Boolean(user),
       signIn,
       signUp,
-      signInWithGoogleToken,
       signOut,
       refreshProfile,
     }),
@@ -133,7 +120,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isInitializing,
       signIn,
       signUp,
-      signInWithGoogleToken,
       signOut,
       refreshProfile,
     ],
