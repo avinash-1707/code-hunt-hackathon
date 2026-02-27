@@ -8,6 +8,7 @@ export type AuthResponse = {
 };
 
 export type RegisterInput = {
+  name: string;
   email: string;
   password: string;
 };
@@ -141,4 +142,26 @@ export const logout = async (): Promise<void> => {
 export const getMe = async () => {
   const response = await api.get(`${API_PREFIX}/users/me`);
   return response.data;
+};
+
+export const getApiErrorMessage = (
+  error: unknown,
+  fallback = "Request failed.",
+): string => {
+  if (axios.isAxiosError(error)) {
+    const message = (error.response?.data as { message?: unknown } | undefined)?.message;
+    if (typeof message === "string" && message.trim().length > 0) {
+      return message;
+    }
+
+    if (error.code === "ERR_NETWORK") {
+      return "Cannot reach API server.";
+    }
+  }
+
+  if (error instanceof Error && error.message.trim().length > 0) {
+    return error.message;
+  }
+
+  return fallback;
 };

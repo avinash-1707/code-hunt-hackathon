@@ -10,6 +10,7 @@ const strongPassword = z
   .regex(/[^A-Za-z0-9]/, "Must include special character");
 
 export const registerSchema = z.object({
+  name: z.string().min(2).max(100).transform((value) => value.trim()),
   email: z.string().email().transform((value) => value.toLowerCase().trim()),
   password: strongPassword,
 });

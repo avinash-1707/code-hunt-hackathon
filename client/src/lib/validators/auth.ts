@@ -10,6 +10,7 @@ const strongPassword = z
   .regex(/[^A-Za-z0-9]/, "Password must include a special character");
 
 export const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
   email: z.string().email("Enter a valid email").transform((value) => value.toLowerCase().trim()),
   password: strongPassword,
 });
@@ -19,10 +20,5 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-export const googleAuthSchema = z.object({
-  idToken: z.string().min(20, "Google ID token is required"),
-});
-
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type LoginFormValues = z.infer<typeof loginSchema>;
-export type GoogleAuthFormValues = z.infer<typeof googleAuthSchema>;

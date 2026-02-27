@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthGuard } from "@/components/auth/auth-guard";
+import { RoleCheck } from "@/components/auth/role-check";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function DashboardPage() {
   return (
-    <AuthGuard>
+    <AuthGuard allowedRoles={["SUPER_ADMIN", "HR_ADMIN", "HR_MANAGER"]}>
       <DashboardContent />
     </AuthGuard>
   );
@@ -77,6 +78,22 @@ function DashboardContent() {
         <pre className="mt-6 overflow-auto rounded-md bg-zinc-900 p-4 text-xs text-zinc-100">
           {JSON.stringify(user, null, 2)}
         </pre>
+
+        <RoleCheck
+          roles={["SUPER_ADMIN", "HR_ADMIN"]}
+          fallback={
+            <p className="mt-4 text-sm text-zinc-500">
+              Admin section is hidden for your role.
+            </p>
+          }
+        >
+          <section className="mt-6 rounded-md border border-zinc-300 bg-zinc-50 p-4">
+            <h2 className="text-sm font-semibold text-zinc-900">Admin Section</h2>
+            <p className="mt-1 text-sm text-zinc-600">
+              Visible only to SUPER_ADMIN and HR_ADMIN roles.
+            </p>
+          </section>
+        </RoleCheck>
       </main>
     </div>
   );

@@ -1,7 +1,14 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { env } from "../config/env.js";
 
-export type AccessPayload = { sub: string; email: string; type: "access" };
+export type AppRole = "SUPER_ADMIN" | "HR_ADMIN" | "HR_MANAGER";
+export type AccessPayload = {
+  sub: string;
+  email: string;
+  name: string;
+  role: AppRole;
+  type: "access";
+};
 export type RefreshPayload = {
   sub: string;
   jti: string;
@@ -33,12 +40,22 @@ export const verifyAccessToken = (token: string): AccessPayload => {
   if (
     payload.type !== "access" ||
     typeof payload.sub !== "string" ||
-    typeof payload.email !== "string"
+    typeof payload.email !== "string" ||
+    typeof payload.name !== "string" ||
+    (payload.role !== "SUPER_ADMIN" &&
+      payload.role !== "HR_ADMIN" &&
+      payload.role !== "HR_MANAGER")
   ) {
     throw new Error("Invalid access token");
   }
 
-  return { sub: payload.sub, email: payload.email, type: "access" };
+  return {
+    sub: payload.sub,
+    email: payload.email,
+    name: payload.name,
+    role: payload.role,
+    type: "access",
+  };
 };
 
 export const verifyRefreshToken = (token: string): RefreshPayload => {

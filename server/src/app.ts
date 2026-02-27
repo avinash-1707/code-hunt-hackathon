@@ -2,7 +2,6 @@ import express from "express";
 import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { passport } from "./config/passport.js";
 import { corsOrigins } from "./config/env.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
@@ -38,7 +37,20 @@ app.use(
 
 app.use(express.json({ limit: "10kb" }));
 app.use(cookieParser());
-app.use(passport.initialize());
+app.use((req, res, next) => {
+  const startedAt = Date.now();
+
+  res.on("finish", () => {
+    if (res.statusCode < 400) return;
+
+    const elapsedMs = Date.now() - startedAt;
+    console.error(
+      `[http] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${elapsedMs}ms)`,
+    );
+  });
+
+  next();
+});
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);

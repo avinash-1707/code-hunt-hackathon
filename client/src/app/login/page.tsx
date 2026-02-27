@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/use-auth";
+import { getApiErrorMessage } from "@/lib/api";
 import {
   loginSchema,
   registerSchema,
@@ -21,7 +22,6 @@ const errorClassName = "text-xs text-red-600";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { isAuthenticated, isInitializing, signIn, signUp } = useAuth();
 
   const [mode, setMode] = useState<AuthMode>("login");
@@ -30,7 +30,7 @@ export default function LoginPage() {
 
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { name: "", email: "", password: "" },
   });
 
   const loginForm = useForm<LoginFormValues>({
@@ -38,33 +38,11 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  const activeForm = useMemo(
-    () => (mode === "login" ? loginForm : registerForm),
-    [mode, loginForm, registerForm],
-  );
-
   useEffect(() => {
     if (!isInitializing && isAuthenticated) {
       router.replace("/dashboard");
     }
   }, [isAuthenticated, isInitializing, router]);
-
-  useEffect(() => {
-    const oauthError = searchParams.get("error");
-    if (!oauthError) return;
-
-    if (oauthError === "google_auth_failed") {
-      setError("Google authentication failed.");
-      return;
-    }
-
-    if (oauthError === "invalid_oauth_state") {
-      setError("Invalid OAuth state. Please try Google login again.");
-      return;
-    }
-
-    setError("Authentication failed.");
-  }, [searchParams]);
 
   const handleLogin = loginForm.handleSubmit(async (values) => {
     setBusy(true);
@@ -72,8 +50,8 @@ export default function LoginPage() {
     try {
       await signIn(values);
       router.replace("/dashboard");
-    } catch {
-      setError("Invalid email or password.");
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, "Invalid email or password."));
     } finally {
       setBusy(false);
     }
@@ -85,22 +63,12 @@ export default function LoginPage() {
     try {
       await signUp(values);
       router.replace("/dashboard");
-    } catch {
-      setError("Registration failed.");
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, "Registration failed."));
     } finally {
       setBusy(false);
     }
   });
-
-  const handleGoogleRedirect = (): void => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) {
-      setError("Missing NEXT_PUBLIC_API_URL");
-      return;
-    }
-
-    window.location.href = `${apiUrl}/api/v1/auth/google/oauth`;
-  };
 
   if (isInitializing) {
     return <div className="p-6 text-sm text-zinc-600">Loading session...</div>;
@@ -130,19 +98,29 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={mode === "login" ? handleLogin : handleRegister} className="mt-4 space-y-3">
+          {mode === "register" ? (
+            <div>
+              <label className="mb-1 block text-sm font-medium text-zinc-800">Full name</label>
+              <input type="text" className={inputClassName} {...registerForm.register("name")} />
+              {registerForm.formState.errors.name ? (
+                <p className={errorClassName}>{registerForm.formState.errors.name.message}</p>
+              ) : null}
+            </div>
+          ) : null}
+
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-800">Email</label>
-            <input type="email" className={inputClassName} {...activeForm.register("email")} />
-            {activeForm.formState.errors.email ? (
-              <p className={errorClassName}>{activeForm.formState.errors.email.message}</p>
+            <input type="email" className={inputClassName} {...(mode === "login" ? loginForm.register("email") : registerForm.register("email"))} />
+            {(mode === "login" ? loginForm.formState.errors.email : registerForm.formState.errors.email) ? (
+              <p className={errorClassName}>{(mode === "login" ? loginForm.formState.errors.email : registerForm.formState.errors.email)?.message}</p>
             ) : null}
           </div>
 
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-800">Password</label>
-            <input type="password" className={inputClassName} {...activeForm.register("password")} />
-            {activeForm.formState.errors.password ? (
-              <p className={errorClassName}>{activeForm.formState.errors.password.message}</p>
+            <input type="password" className={inputClassName} {...(mode === "login" ? loginForm.register("password") : registerForm.register("password"))} />
+            {(mode === "login" ? loginForm.formState.errors.password : registerForm.formState.errors.password) ? (
+              <p className={errorClassName}>{(mode === "login" ? loginForm.formState.errors.password : registerForm.formState.errors.password)?.message}</p>
             ) : null}
           </div>
 
@@ -154,18 +132,6 @@ export default function LoginPage() {
             {mode === "login" ? "Login" : "Create account"}
           </button>
         </form>
-
-        <div className="mt-5 space-y-3 border-t border-zinc-200 pt-4">
-          <h2 className="text-sm font-semibold text-zinc-800">Google login</h2>
-          <button
-            type="button"
-            onClick={handleGoogleRedirect}
-            disabled={busy}
-            className="w-full rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-900 transition hover:bg-zinc-50 disabled:opacity-60"
-          >
-            Continue with Google
-          </button>
-        </div>
 
         {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
       </main>

@@ -1,7 +1,6 @@
 generator client {
   provider        = "prisma-client"
   output          = "../src/generated/prisma"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -12,7 +11,6 @@ datasource db {
 
 enum AuthProvider {
   LOCAL
-  GOOGLE
 }
 
 enum UserRole {
@@ -21,10 +19,6 @@ enum UserRole {
   HR_MANAGER
 }
 
-enum EmployeeStatus {
-  ACTIVE
-  RESIGNED
-  TERMINATED
 enum JobOpeningStatus {
   OPEN
   CLOSED
@@ -124,22 +118,17 @@ enum CandidateSource {
 
 model User {
   id            String       @id @default(cuid())
+  name          String?
   email         String       @unique
   passwordHash  String?
   provider      AuthProvider @default(LOCAL)
-  googleId      String?      @unique
   emailVerified Boolean      @default(false)
   role          UserRole     @default(HR_MANAGER)
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  role UserRole @default(HR_MANAGER)
-
   refreshTokens RefreshToken[]
   employee      Employee?
-  refreshTokens     RefreshToken[]
-  employee          Employee?
-  conductedInterviews Interview[]   @relation("Interviewer")
   managedOpenings   JobOpening[]   @relation("HiringManager")
 
   @@index([provider])
@@ -294,10 +283,8 @@ model Interview {
   updatedAt     DateTime        @updatedAt
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  interviewer User        @relation("Interviewer", fields: [interviewerId], references: [id])
 
   @@index([applicationId])
-  @@index([interviewerId])
   @@index([scheduledAt])
 }
 

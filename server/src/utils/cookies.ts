@@ -1,10 +1,6 @@
 import type { CookieOptions, Response } from "express";
 import { env } from "../config/env.js";
-import {
-  REFRESH_COOKIE_NAME,
-  CSRF_COOKIE_NAME,
-  GOOGLE_OAUTH_STATE_COOKIE_NAME,
-} from "../config/constants.js";
+import { REFRESH_COOKIE_NAME, CSRF_COOKIE_NAME } from "../config/constants.js";
 
 const secure = env.NODE_ENV === "production";
 
@@ -12,13 +8,6 @@ const baseCookie: CookieOptions = {
   secure,
   sameSite: env.COOKIE_SAME_SITE,
   path: "/api/v1/auth",
-};
-
-const googleOAuthCookie: CookieOptions = {
-  secure,
-  sameSite: "lax",
-  path: "/api/v1/auth/google",
-  httpOnly: true,
 };
 
 export const setRefreshCookie = (res: Response, token: string): void => {
@@ -51,15 +40,4 @@ export const clearCsrfCookie = (res: Response): void => {
     path: "/",
     httpOnly: false,
   });
-};
-
-export const setGoogleOAuthStateCookie = (res: Response, state: string): void => {
-  res.cookie(GOOGLE_OAUTH_STATE_COOKIE_NAME, state, {
-    ...googleOAuthCookie,
-    maxAge: 10 * 60 * 1000,
-  });
-};
-
-export const clearGoogleOAuthStateCookie = (res: Response): void => {
-  res.clearCookie(GOOGLE_OAUTH_STATE_COOKIE_NAME, googleOAuthCookie);
 };

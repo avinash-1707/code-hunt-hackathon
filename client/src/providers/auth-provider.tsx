@@ -19,11 +19,14 @@ import {
   type LoginInput,
   type RegisterInput,
 } from "@/lib/api";
+import type { AppRole } from "@/lib/auth/roles";
 
 type AuthUser = {
   id: string;
+  name: string;
   email: string;
-  provider: "LOCAL" | "GOOGLE";
+  role: AppRole;
+  provider: "LOCAL";
   emailVerified: boolean;
   createdAt: string;
 };
