@@ -19,3 +19,15 @@ export const requireAuth = (req: Request, _res: Response, next: NextFunction): v
     next(new AppError(401, "Unauthorized"));
   }
 };
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+      };
+      userRole?: string;
+    }
+  }
+}
