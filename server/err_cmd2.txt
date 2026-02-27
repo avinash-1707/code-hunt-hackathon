@@ -1,0 +1,12 @@
+[2mLoaded Prisma config from prisma.config.ts.
+[22m
+[2mPrisma schema loaded from prisma\schema.prisma.[22m
+[1m[31mError: [39m[22mAn output path is required for the `prisma-client` generator. Please provide an output path in your schema file:
+
+[2mgenerator client {
+  provider = "prisma-client"[22m
+[32m  output   = "../src/generated"[39m
+[2m}[22m
+
+[1mNote:[22m the output path is relative to the schema directory.
+

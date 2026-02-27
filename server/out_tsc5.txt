@@ -1,0 +1,35 @@
+src/modules/auth/auth.service.ts(14,15): error TS2305: Module '"../../prisma/client.js"' has no exported member 'User'.
+src/modules/hr-admin/attendance/attendance.service.ts(31,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(89,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(90,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(91,38): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(92,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/compensation/compensation.service.ts(25,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/employee/employee.service.ts(1,18): error TS2724: '"../../../prisma/client.js"' has no exported member named 'Prisma'. Did you mean 'prisma'?
+src/modules/hr-admin/employee/employee.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/employee/employee.service.ts(53,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/employee/employee.service.ts(83,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/goals/goals.service.ts(33,44): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(34,48): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(40,37): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(47,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(72,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/leaves/leaves.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/leaves/leaves.service.ts(30,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/payroll/payroll.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/payroll/payroll.service.ts(37,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/modules/hr-admin/performance/performance.service.ts(30,49): error TS7006: Parameter 'tx' implicitly has an 'any' type.
+src/prisma/client.ts(1,10): error TS2395: Individual declarations in merged declaration 'prisma' must be all exported or all local.
+src/prisma/client.ts(1,10): error TS2440: Import declaration conflicts with local declaration of 'prisma'.
+src/prisma/client.ts(7,15): error TS2749: 'prisma' refers to a value, but is being used as a type here. Did you mean 'typeof prisma'?
+src/prisma/client.ts(14,14): error TS2395: Individual declarations in merged declaration 'prisma' must be all exported or all local.
+src/prisma/client.ts(14,14): error TS7022: 'prisma' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/prisma/client.ts(14,44): error TS2448: Block-scoped variable 'prisma' used before its declaration.
+src/utils/jwt.ts(21,7): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.

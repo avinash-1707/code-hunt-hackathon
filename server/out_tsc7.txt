@@ -1,0 +1,36 @@
+src/modules/hr-admin/attendance/attendance.service.ts(35,39): error TS2339: Property 'attendance' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/attendance/attendance.service.ts(53,37): error TS2339: Property 'attendance' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/attendance/attendance.service.ts(89,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(90,39): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(91,38): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/attendance/attendance.service.ts(92,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/modules/hr-admin/compensation/compensation.service.ts(26,35): error TS2339: Property 'compensation' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/employee/employee.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/employee/employee.service.ts(54,39): error TS2339: Property 'employee' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/employee/employee.service.ts(61,38): error TS2339: Property 'employee' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/employee/employee.service.ts(84,39): error TS2339: Property 'employee' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/employee/employee.service.ts(90,38): error TS2339: Property 'employee' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/employee/employee.service.ts(96,22): error TS2339: Property 'payroll' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/employee/employee.service.ts(100,22): error TS2339: Property 'payroll' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/goals/goals.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/goals/goals.service.ts(33,44): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(34,48): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(40,37): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/modules/hr-admin/goals/goals.service.ts(48,35): error TS2339: Property 'goal' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/goals/goals.service.ts(73,39): error TS2339: Property 'goal' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/goals/goals.service.ts(83,35): error TS2339: Property 'goal' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/leaves/leaves.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/leaves/leaves.service.ts(31,36): error TS2339: Property 'leaveRequest' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/leaves/leaves.service.ts(38,38): error TS2339: Property 'leaveRequest' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/payroll/payroll.service.ts(2,26): error TS2307: Cannot find module '../../core/errors.js' or its corresponding type declarations.
+src/modules/hr-admin/payroll/payroll.service.ts(38,38): error TS2339: Property 'payroll' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/payroll/payroll.service.ts(45,38): error TS2339: Property 'payroll' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/performance/performance.service.ts(32,39): error TS2339: Property 'employee' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/modules/hr-admin/performance/performance.service.ts(43,37): error TS2339: Property 'performanceReview' does not exist on type 'Omit<PrismaClient<never, undefined, runtime.Types.Extensions.DefaultArgs>, runtime.ITXClientDenyList>'.
+src/utils/jwt.ts(21,7): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: null, options?: (SignOptions & { algorithm: "none"; }) | undefined): string', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'null'.
+  Overload 2 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, options?: SignOptions | undefined): string', gave the following error.
+    Type 'string' is not assignable to type 'number | StringValue | undefined'.
+  Overload 3 of 5, '(payload: string | object | Buffer<ArrayBufferLike>, secretOrPrivateKey: Buffer<ArrayBufferLike> | Secret | PrivateKeyInput | JsonWebKeyInput, callback: SignCallback): void', gave the following error.
+    Object literal may only specify known properties, and 'expiresIn' does not exist in type 'SignCallback'.

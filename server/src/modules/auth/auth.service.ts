@@ -11,7 +11,7 @@ import {
   verifyRefreshToken,
 } from "../../utils/jwt.js";
 import { AuthProvider } from "../../generated/prisma/enums.js";
-import type { User } from "../../generated/prisma/client.js";
+import type { User } from "../../prisma/client.js";
 
 export type SessionMeta = {
   ipAddress: string | null;

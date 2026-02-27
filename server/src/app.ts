@@ -6,6 +6,7 @@ import { passport } from "./config/passport.js";
 import { corsOrigins } from "./config/env.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import userRoutes from "./modules/user/user.routes.js";
+import hrAdminRoutes from "./modules/hr-admin/hr-admin.routes.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 
 export const app = express();
@@ -41,6 +42,7 @@ app.use(passport.initialize());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/hr-admin", hrAdminRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
