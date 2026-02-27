@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: codehunt
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  server:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DATABASE_URL: "postgresql://postgres:example@db:5432/codehunt"
+      ACCESS_TOKEN_SECRET: "dev-access-token-secret-please-change-this"
+      REFRESH_TOKEN_SECRET: "dev-refresh-token-secret-please-change-this"
+      CORS_ORIGINS: "http://localhost:3000,http://client:3000"
+      COOKIE_SAME_SITE: "lax"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+
+  client:
+    build: ./client
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:5000/api/v1"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+volumes:
+  db_data:
