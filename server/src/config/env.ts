@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
   PORT: z.coerce.number().int().positive().default(4000),
 
   DATABASE_URL: z.string().url(),
@@ -14,6 +16,7 @@ const envSchema = z.object({
 
   CORS_ORIGINS: z.string().min(1),
   COOKIE_SAME_SITE: z.enum(["strict", "lax", "none"]).default("lax"),
+  REDIS_URL: z.string().url().default("redis://localhost:6379"),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -22,4 +25,6 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
-export const corsOrigins = env.CORS_ORIGINS.split(",").map((value) => value.trim());
+export const corsOrigins = env.CORS_ORIGINS.split(",").map((value) =>
+  value.trim(),
+);
