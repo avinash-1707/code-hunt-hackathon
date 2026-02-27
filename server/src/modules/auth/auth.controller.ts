@@ -1,71 +1,115 @@
 import type { Request, Response } from "express";
-import { AuthService } from "./auth.service.js";
-import { REFRESH_COOKIE_NAME } from "../../config/constants.js";
-import { clearCsrfCookie, clearRefreshCookie, setCsrfCookie, setRefreshCookie } from "../../utils/cookies.js";
+import { env } from "../../config/env.js";
 
-const service = new AuthService();
+import {
+  GOOGLE_OAUTH_STATE_COOKIE_NAME,
+  REFRESH_COOKIE_NAME,
+} from "../../config/constants.js";
+import {
+  clearGoogleOAuthStateCookie,
+  clearCsrfCookie,
+  clearRefreshCookie,
+  setCsrfCookie,
+  setRefreshCookie,
+} from "../../utils/cookies.js";
+import {
+  loginUser,
+  logoutUserSession,
+  refreshUserSession,
+  registerUser,
+  type SessionMeta,
+  issueTokensForUserId,
+} from "./auth.service.js";
 
-const sessionMeta = (req: Request) => ({
+const getSessionMeta = (req: Request): SessionMeta => ({
   ipAddress: req.ip ?? null,
   userAgent: req.get("user-agent") ?? null,
 });
 
-export class AuthController {
-  async register(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body as { email: string; password: string };
-    const tokens = await service.register(email, password, sessionMeta(req));
+export const registerHandler = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { email, password } = req.body as { email: string; password: string };
+  const tokens = await registerUser(email, password, getSessionMeta(req));
 
-    setRefreshCookie(res, tokens.refreshToken);
-    setCsrfCookie(res, tokens.csrfToken);
+  setRefreshCookie(res, tokens.refreshToken);
+  setCsrfCookie(res, tokens.csrfToken);
 
-    res.status(201).json({ accessToken: tokens.accessToken });
+  res.status(201).json({ accessToken: tokens.accessToken });
+};
+
+export const loginHandler = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body as { email: string; password: string };
+  const tokens = await loginUser(email, password, getSessionMeta(req));
+
+  setRefreshCookie(res, tokens.refreshToken);
+  setCsrfCookie(res, tokens.csrfToken);
+
+  res.json({ accessToken: tokens.accessToken });
+};
+
+export const googleOAuthCallbackHandler = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const cookieState = req.cookies?.[GOOGLE_OAUTH_STATE_COOKIE_NAME] as
+    | string
+    | undefined;
+  const queryState = typeof req.query.state === "string" ? req.query.state : undefined;
+
+  if (!cookieState || !queryState || cookieState !== queryState) {
+    clearGoogleOAuthStateCookie(res);
+    res.redirect(`${env.FRONTEND_URL}/login?error=invalid_oauth_state`);
+    return;
   }
 
-  async login(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body as { email: string; password: string };
-    const tokens = await service.login(email, password, sessionMeta(req));
+  clearGoogleOAuthStateCookie(res);
 
-    setRefreshCookie(res, tokens.refreshToken);
-    setCsrfCookie(res, tokens.csrfToken);
+  const user = req.user as { id: string; email: string } | undefined;
 
-    res.json({ accessToken: tokens.accessToken });
+  if (!user) {
+    res.redirect(`${env.FRONTEND_URL}/login?error=google_auth_failed`);
+    return;
   }
 
-  async google(req: Request, res: Response): Promise<void> {
-    const { idToken } = req.body as { idToken: string };
-    const tokens = await service.loginWithGoogle(idToken, sessionMeta(req));
+  const tokens = await issueTokensForUserId(user.id, getSessionMeta(req));
+  setRefreshCookie(res, tokens.refreshToken);
+  setCsrfCookie(res, tokens.csrfToken);
 
-    setRefreshCookie(res, tokens.refreshToken);
-    setCsrfCookie(res, tokens.csrfToken);
+  res.redirect(`${env.FRONTEND_URL}/dashboard`);
+};
 
-    res.json({ accessToken: tokens.accessToken });
+export const refreshHandler = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined;
+
+  if (!refreshToken) {
+    res.status(401).json({ message: "Missing refresh token" });
+    return;
   }
 
-  async refresh(req: Request, res: Response): Promise<void> {
-    const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined;
+  const tokens = await refreshUserSession(refreshToken, getSessionMeta(req));
 
-    if (!refreshToken) {
-      res.status(401).json({ message: "Missing refresh token" });
-      return;
-    }
+  setRefreshCookie(res, tokens.refreshToken);
+  setCsrfCookie(res, tokens.csrfToken);
 
-    const tokens = await service.refresh(refreshToken, sessionMeta(req));
+  res.json({ accessToken: tokens.accessToken });
+};
 
-    setRefreshCookie(res, tokens.refreshToken);
-    setCsrfCookie(res, tokens.csrfToken);
+export const logoutHandler = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined;
 
-    res.json({ accessToken: tokens.accessToken });
+  if (refreshToken) {
+    await logoutUserSession(refreshToken);
   }
 
-  async logout(req: Request, res: Response): Promise<void> {
-    const refreshToken = req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined;
-
-    if (refreshToken) {
-      await service.logout(refreshToken);
-    }
-
-    clearRefreshCookie(res);
-    clearCsrfCookie(res);
-    res.status(204).send();
-  }
-}
+  clearRefreshCookie(res);
+  clearCsrfCookie(res);
+  res.status(204).send();
+};
